@@ -673,10 +673,24 @@ public class KonashiManager {
     }
 
     private void connect(BluetoothDevice device){
-        mDevice = device;
-        mBletia = new Bletia(mContext);
-        mBletia.addListener(mCallbackHandler);
-        mBletia.connect(device);
+        synchronized (mBletia) {
+            // 接続済みまたは接続中で同じ端末ならなにもしない
+            if (isConnected() || mBletia.getState() == BleState.CONNECTING) {
+                if (device != null && mDevice != null && device.getAddress() == mDevice.getAddress()) {
+                    return;
+                }
+            }
+
+            if (mDevice != null && isConnected()) {
+                mBletia.disconenct();
+            }
+
+            mDevice = device;
+            mBletia = new Bletia(mContext);
+            mBletia.addListener(mCallbackHandler);
+            mBletia.connect(device);
+
+        }
     }
 
     private <T> Promise<T, BletiaException, Void> execute(Action<T, ?> action, DoneCallback<T> callback) {
