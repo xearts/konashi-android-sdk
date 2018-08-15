@@ -80,7 +80,7 @@ class ConnectionHelper implements BleDeviceSelectionDialog.OnBleDeviceSelectList
             return;
         }
 
-        if ((mKonashiName != null) && device.getName().equals(mKonashiName)) {
+        if ((mKonashiName != null) && device.getName().equals(mKonashiName) && mIsScanning) {
             onSelectBleDevice(device);
             return;
         }
